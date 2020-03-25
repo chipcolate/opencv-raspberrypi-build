@@ -1,7 +1,7 @@
 ARG OPENCV_VERSION="4.2.0"
 ARG PYTHON_VERSION="3.8.1"
 ## buildstep base image
-FROM balenalib/raspberrypi3-debian-python:${PYTHON_VERSION}-build
+FROM balenalib/raspberrypi3-debian-python:${PYTHON_VERSION}-build as buildstep
 ARG OPENCV_VERSION
 ARG PYTHON_VERSION
 
