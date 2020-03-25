@@ -1,7 +1,7 @@
 ARG OPENCV_VERSION="4.2.0"
 ARG PYTHON_VERSION="3.8.1"
 ## buildstep base image
-FROM balenalib/raspberrypi3-debian-python:${PYTHON_VERSION}-build as buildstep
+FROM balenalib/raspberrypi3-debian-python:${PYTHON_VERSION}-build AS buildstep
 ARG OPENCV_VERSION
 ARG PYTHON_VERSION
 
@@ -47,26 +47,28 @@ RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION
   https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip \
 && unzip opencv_contrib.zip && cd opencv-${OPENCV_VERSION} && mkdir build \
 && cd build && cmake \
-    -D CMAKE_BUILD_TYPE=RELEASE \
-    -D OPENCV_GENERATE_PKGCONFIG=ON \
-    -D PYTHON_EXECUTABLE=$(which python${PYTHON_VERSION}) \
-    -D PYTHON_INCLUDE_DIR=$(python${PYTHON_VERSION} -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
-    -D PYTHON_PACKAGES_PATH=$(python${PYTHON_VERSION} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
-		-D INSTALL_C_EXAMPLES=OFF \
-		-D BUILD_PYTHON_SUPPORT=ON \
-		-D BUILD_NEW_PYTHON_SUPPORT=ON \
-		-D INSTALL_PYTHON_EXAMPLES=OFF \
-    -D BUILD_TESTS=OFF \
-    -D BUILD_PERF_TESTS=OFF \
-    -D CPACK_BINARY_DEB=ON \
-    -D CMAKE_SHARED_LINKER_FLAGS=-latomic \
-    -D OPENCV_ENABLE_NONFREE=ON \
-    -D BUILD_TESTS=OFF \
-    -D ENABLE_NEON=ON \
-    -D ENABLE_VFPV3=ON \
-    -D WITH_CUDA=OFF \
-		-D OPENCV_EXTRA_MODULES_PATH=/usr/src/app/opencv_contrib-${OPENCV_VERSION}/modules \
-		-D BUILD_EXAMPLES=OFF .. \
+  -D CMAKE_BUILD_TYPE=RELEASE \
+  -D OPENCV_GENERATE_PKGCONFIG=ON \
+  -D BUILD_opencv_python2=OFF \
+  -D BUILD_opencv_python3=ON \
+  -D PYTHON_DEFAULT_EXECUTABLE=$(which python${PYTHON_VERSION}) \
+  -D INSTALL_C_EXAMPLES=OFF \
+  -D BUILD_PYTHON_SUPPORT=ON \
+  -D BUILD_NEW_PYTHON_SUPPORT=ON \
+  -D INSTALL_PYTHON_EXAMPLES=OFF \
+  -D BUILD_TESTS=OFF \
+  -D BUILD_PERF_TESTS=OFF \
+  -D CPACK_BINARY_DEB=ON \
+  -D CPACK_PACKAGE_VERSION=${OPENCV_VERSION} \
+  -D CMAKE_SHARED_LINKER_FLAGS=-latomic \
+  -D CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS=ON \
+  -D OPENCV_ENABLE_NONFREE=ON \
+  -D BUILD_TESTS=OFF \
+  -D ENABLE_NEON=ON \
+  -D ENABLE_VFPV3=ON \
+  -D WITH_CUDA=OFF \
+  -D OPENCV_EXTRA_MODULES_PATH=/usr/src/app/opencv_contrib-${OPENCV_VERSION}/modules \
+  -D BUILD_EXAMPLES=OFF .. \
 && make -j 16 && make install && make package
 
 ## commodity image for exposing the opencv artifacts with a webserver
