@@ -70,7 +70,7 @@ RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION
 && make -j 16 && make install && make package
 
 ## commodity image for exposing the opencv artifacts with a webserver
-FROM balenalib/%%BALENA_MACHINE_NAME%%-node:12-run
+FROM balenalib/raspberrypi3-node:12-run
 ARG OPENCV_VERSION
 ARG PYTHON_VERSION
 
