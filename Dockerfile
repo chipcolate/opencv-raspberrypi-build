@@ -33,7 +33,8 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
   libfreetype6-dev \
   libzbar-dev \
   libopencv-dev \
-  wiringpi
+  wiringpi \
+  libgtk2.0-dev
 
 WORKDIR /usr/src/app
 
@@ -69,6 +70,15 @@ RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION
   -D ENABLE_NEON=ON \
   -D ENABLE_VFPV3=ON \
   -D WITH_CUDA=OFF \
+  -D FORCE_VTK=ON \
+  -D WITH_TBB=ON \
+  -D WITH_V4L=ON \
+  -D WITH=QT=ON \
+  -D WITH_OPENGL=ON \
+  -D WITH_CUBLAS=ON \
+  -D CUDA_NVCC_FLAGS="-D_FORCE_INLINES" \
+  -D WITH_GDAL=ON \
+  -D WITH_XINE=ON \
   -D OPENCV_EXTRA_MODULES_PATH=/usr/src/app/opencv_contrib-${OPENCV_VERSION}/modules \
   -D BUILD_EXAMPLES=OFF .. \
 && make -j 16 && make install && make package
